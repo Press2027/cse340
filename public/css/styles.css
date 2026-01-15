@@ -1,6 +1,75 @@
-/******* Change Box Model ***************/
-*,
-*:before,
-*:after {
-  box-sizing: border-box;
+* { box-sizing: border-box; }
+
+body {
+  background: #fff;
+  background-image: linear-gradient(45deg, #ccc 25%, transparent 25%), 
+                    linear-gradient(-45deg, #ccc 25%, transparent 25%), 
+                    linear-gradient(45deg, transparent 75%, #ccc 75%), 
+                    linear-gradient(-45deg, transparent 75%, #ccc 75%);
+  background-size: 40px 40px;
+  background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 30px;
 }
+
+#wrapper {
+  background: white;
+  max-width: 900px;
+  margin: 0 auto;
+  border: 4px solid #3ac5e8;
+  padding: 15px;
+}
+
+#top-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+}
+
+.siteName a { font-size: 2rem; text-decoration: none; color: #333; }
+
+nav ul {
+  display: flex;
+  background: #333;
+  list-style: none;
+  padding: 0;
+  justify-content: space-around;
+}
+
+nav a { color: white; text-decoration: none; padding: 15px; display: block; }
+
+.hero-box {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.hero-details {
+  position: absolute;
+  left: 50px;
+  top: 30px;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 10px;
+}
+
+.blue-text { color: #3ac5e8; margin: 5px 0; }
+.own-button { background: #3ac5e8; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; }
+
+.lower-flex {
+  display: flex;
+  gap: 40px;
+  margin-top: 30px;
+}
+
+.upgrade-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.upgrade-card { background: #3ac5e8; text-align: center; padding: 5px; }
+.img-bg { background: white; padding: 10px; border: 1px solid #333; }
+.upgrade-card img { width: 50px; height: 50px; }
+.upgrade-card a { color: blue; font-size: 0.8rem; }
+
+footer { margin-top: 20px; text-align: left; }
