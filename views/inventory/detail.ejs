@@ -1,0 +1,11 @@
+<% if (title) { %>
+  <h1><%= title %></h1>
+<% } %>
+
+<% if (typeof vehicleHTML !== 'undefined') { %>
+  <div class="inventory-container">
+    <%- vehicleHTML %>
+  </div>
+<% } else { %>
+  <p>Vehicle details not found.</p>
+<% } %>

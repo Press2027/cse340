@@ -43,3 +43,68 @@
     text-align: center;
   }
 }
+
+/* =========================
+   CLASSIFICATION PAGE
+========================= */
+
+/* Inventory grid */
+#inv-display {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  list-style: none;
+  padding: 0;
+  margin-top: 20px;
+}
+
+/* Each vehicle card */
+#inv-display li {
+  background: #fff;
+  border: 2px solid #3ac5e8;
+  padding: 10px;
+  text-align: center;
+}
+
+/* Vehicle image */
+#inv-display img {
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+/* Name & price area */
+.namePrice {
+  margin-top: 10px;
+}
+
+.namePrice h2 {
+  font-size: 1rem;
+  margin-bottom: 5px;
+}
+
+.namePrice a {
+  text-decoration: none;
+  color: #333;
+}
+
+.namePrice a:hover {
+  color: #3ac5e8;
+}
+
+/* Price */
+.namePrice span {
+  display: block;
+  font-weight: bold;
+  color: #000;
+  margin-top: 5px;
+}
+
+/* =========================
+   CLASSIFICATION MOBILE
+========================= */
+@media (max-width: 768px) {
+  #inv-display {
+    grid-template-columns: 1fr;
+  }
+}

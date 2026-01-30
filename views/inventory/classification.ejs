@@ -1,0 +1,9 @@
+<% if (title) { %>
+  <h1><%= title %></h1>
+<% } %>
+
+<% if (typeof grid !== 'undefined') { %>
+  <%- grid %>
+<% } else { %>
+  <p>No vehicles found.</p>
+<% } %>

@@ -1,6 +1,10 @@
 /* ***********************
  * Require Statements
  *************************/
+const baseController = require("./controllers/baseController")
+const inventoryRoute = require("./routes/inventoryRoute")
+const utilities = require("./utilities")
+
 const express = require("express")
 const expressLayouts = require("express-ejs-layouts")
 const path = require("path")
@@ -27,9 +31,37 @@ app.use(express.static(path.join(__dirname, "public")))
 app.use(staticRoutes)
 
 // Index route
-app.get("/", (req, res) => {
-  res.render("index", { title: "Home" })
+app.get("/", utilities.handleErrors(baseController.buildHome))
+
+// Inventory routes
+app.use("/inv", inventoryRoute)
+
+/* ***********************
+ * File Not Found Route (404)
+ * Must be AFTER all routes
+ *************************/
+app.use((req, res, next) => {
+  const err = new Error("Sorry, we appear to have lost that page.")
+  err.status = 404
+  next(err)
 })
+
+/* ***********************
+* Express Error Handler
+* *************************/
+app.use(async (err, req, res, next) => {
+  let nav = await utilities.getNav()
+  console.error(`Error at: "${req.originalUrl}": ${err.message}`)
+  
+  // If the error message is the one we threw, or any other 500 error
+  res.status(500).render("errors/error", {
+    title: 'Server Error',
+    message: "Oh no! There was a crash. Maybe try a different route?",
+    nav
+  })
+})
+
+
 
 /* ***********************
  * Server Information
