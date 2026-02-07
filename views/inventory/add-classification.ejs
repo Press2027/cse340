@@ -1,0 +1,22 @@
+<h1>Add Classification</h1>
+
+<% if (message) { %>
+  <p class="notice <%= message.includes('Failed') ? 'error' : 'success' %>"><%= message %></p>
+<% } %>
+
+<form action="/inv/add-classification" method="POST">
+  <h2>Add New Classification</h2>
+
+  <label for="classification_name">Classification Name</label>
+  <input
+    type="text"
+    name="classification_name"
+    id="classification_name"
+    pattern="[A-Za-z0-9]+"
+    title="No spaces or special characters allowed"
+    required
+    value="<%= classification_name || '' %>"
+  >
+
+  <button type="submit">Add Classification</button>
+</form>

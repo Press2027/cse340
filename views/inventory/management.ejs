@@ -1,0 +1,18 @@
+<h1>Inventory Management</h1>
+
+<% if (message && message.length > 0) { %>
+  <div class="notice">
+    <p><%= message %></p>
+  </div>
+<% } %>
+
+<section class="inventory-management">
+  <ul>
+    <li>
+      <a href="/inv/add-classification">Add New Classification</a>
+    </li>
+    <li>
+      <a href="/inv/add-inventory">Add New Inventory</a>
+    </li>
+  </ul>
+</section>
