@@ -2,19 +2,33 @@
 
 <h1><%= title %></h1>
 
-<% if (locals.messages) { %>
-  <div class="notice">
-    <%= locals.messages %>
+<!-- Flash messages (from req.flash('notice')) -->
+<% if (notice && notice.length > 0) { %>
+  <div class="alert alert-success">
+    <%= notice %>
+  </div>
+<% } %>
+
+<!-- Validation errors -->
+<% if (errors && !errors.isEmpty()) { %>
+  <div class="alert alert-danger">
+    <ul>
+      <% errors.array().forEach(error => { %>
+        <li><%= error.msg %></li>
+      <% }) %>
+    </ul>
   </div>
 <% } %>
 
 <form action="/account/register" method="post" class="register-form">
+
   <label for="account_firstname">First Name</label>
   <input
     type="text"
     name="account_firstname"
     id="account_firstname"
     required
+    value="<%= account_firstname || '' %>"
   >
 
   <label for="account_lastname">Last Name</label>
@@ -23,6 +37,7 @@
     name="account_lastname"
     id="account_lastname"
     required
+    value="<%= account_lastname || '' %>"
   >
 
   <label for="account_email">Email Address</label>
@@ -31,11 +46,10 @@
     name="account_email"
     id="account_email"
     required
-  
+    value="<%= account_email || '' %>"
+  >
 
-  <label for="account_password">Password</label>>
-
-    
+  <label for="account_password">Password</label>
   <input
     type="password"
     name="account_password"
@@ -43,26 +57,18 @@
     required
     pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{12,}$"
   >
-<div class="password-rules">
-      Password must be at least 12 characters and include:
-      <ul>
-        <li>1 uppercase letter</li>
-        <li>1 lowercase letter</li>
-        <li>1 number</li>
-        <li>1 special character</li>
-      </ul>
-    </div>
- 
+
+  <div class="password-rules">
+    Password must be at least 12 characters and include:
+    <ul>
+      <li>1 uppercase letter</li>
+      <li>1 lowercase letter</li>
+      <li>1 number</li>
+      <li>1 special character</li>
+    </ul>
+  </div>
 
   <button type="submit">Register</button>
 </form>
-
-<% if (errors) { %>
-  <ul class="notice">
-    <% errors.array().forEach(error => { %>
-      <li><%= error.msg %></li>
-    <% }) %>
-  </ul>
-<% } %>
 
 <%- include("../partials/footer") %>

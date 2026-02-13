@@ -1,70 +1,74 @@
-/* ***********************
- * Require Statements
- *************************/
-require("dotenv").config();
-const session = require("express-session")
-const flash = require("connect-flash")
-const bodyParser = require("body-parser")
-const baseController = require("./controllers/baseController")
-const inventoryRoute = require("./routes/inventoryRoute")
-const accountRoute = require("./routes/accountRoute")
-
-const utilities = require("./utilities")
-
+require("dotenv").config()
 const express = require("express")
 const expressLayouts = require("express-ejs-layouts")
 const path = require("path")
+const bodyParser = require("body-parser")
+const session = require("express-session")
+const flash = require("connect-flash")
+const cookieParser = require("cookie-parser")
 
-
-const app = express()
+// Controllers & Routes
+const baseController = require("./controllers/baseController")
+const accountRoute = require("./routes/accountRoute")
+const inventoryRoute = require("./routes/inventoryRoute")
 const staticRoutes = require("./routes/static")
 
+// Utilities
+const checkJWTToken = require("./utilities/checkJWT")
+
 /* ***********************
- * View Engine and Templates
+ * Express App Setup
+ *************************/
+const app = express()
+
+/* ***********************
+ * View Engine
  *************************/
 app.set("view engine", "ejs")
 app.use(expressLayouts)
 app.set("layout", "./layouts/layout")
 
 /* ***********************
- * Static Files Middleware
+ * Middleware
  *************************/
 app.use(express.static(path.join(__dirname, "public")))
 app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(cookieParser())
+
+// Session & Flash
 app.use(
   session({
-    secret: "secret",
+    secret: process.env.SESSION_SECRET || "secret",
     resave: false,
     saveUninitialized: true,
   })
 )
 app.use(flash())
-app.use(function (req, res, next) {
-  res.locals.messages = req.flash("notice")
+
+// JWT middleware MUST come BEFORE routes
+app.use(checkJWTToken)
+
+// Make flash messages and login info available in all views
+app.use((req, res, next) => {
+  res.locals.notice = req.flash("notice") || null
+  res.locals.loggedin = req.account ? true : false
+  res.locals.accountData = req.account || null
   next()
 })
-
-
 
 /* ***********************
  * Routes
  *************************/
 app.use(staticRoutes)
 app.use("/account", accountRoute)
+app.use("/inv", inventoryRoute)
 
-
-// Index route
-app.get("/", utilities.handleErrors(baseController.buildHome))
-
-// Inventory routes
-// Inventory routes
-app.use("/inv", require("./routes/inventoryRoute"))
-
+// Home route
+app.get("/", baseController.buildHome)
 
 /* ***********************
- * File Not Found Route (404)
- * Must be AFTER all routes
+ * 404 Not Found Handler
  *************************/
 app.use((req, res, next) => {
   const err = new Error("Sorry, we appear to have lost that page.")
@@ -73,28 +77,31 @@ app.use((req, res, next) => {
 })
 
 /* ***********************
-* Express Error Handler
-* *************************/
+ * Express Error Handler
+ *************************/
 app.use(async (err, req, res, next) => {
-  let nav = await utilities.getNav()
+  const nav = await require("./utilities").getNav()
   console.error(`Error at: "${req.originalUrl}": ${err.message}`)
-  
-  // If the error message is the one we threw, or any other 500 error
-  res.status(500).render("errors/error", {
-    title: 'Server Error',
-    message: "Oh no! There was a crash. Maybe try a different route?",
-    nav
+
+  res.status(err.status || 500).render("errors/error", {
+    title: err.status === 404 ? "Page Not Found" : "Server Error",
+    message:
+      err.status === 404
+        ? err.message
+        : "Oh no! There was a crash. Maybe try a different route?",
+    nav,
+    loggedin: res.locals.loggedin,
+    accountData: res.locals.accountData,
+    notice: res.locals.notice,
   })
 })
 
-
-
 /* ***********************
- * Server Information
+ * Server Start
  *************************/
-const port = process.env.PORT
-const host = process.env.HOST
+const port = process.env.PORT || 5500
+const host = process.env.HOST || "localhost"
 
 app.listen(port, () => {
-  console.log(`app listening on ${host}:${port}`)
+  console.log(`App listening on ${host}:${port}`)
 })

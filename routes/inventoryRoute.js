@@ -1,35 +1,33 @@
-// Needed Resources 
 const express = require("express")
-const router = new express.Router()
+const router = express.Router()
 const invController = require("../controllers/invController")
 const classificationValidate = require("../utilities/classification-validation")
 const inventoryValidate = require("../utilities/inventory-validation")
+const checkEmployeeOrAdmin = require("../utilities/authorizeEmployee") // middleware for Task 2
 
-// Route to build inventory by classification view
+// Public routes (site visitors)
 router.get("/type/:classificationId", invController.buildByClassificationId)
-
-// Route to build vehicle detail view (single vehicle)
 router.get("/detail/:invId", invController.buildVehicleDetail)
 
-// Route to deliver inventory management view
-router.get("/", invController.buildManagement)
+// Admin-only routes
+router.get("/", checkEmployeeOrAdmin, invController.buildManagement)
 
-// Deliver add-classification view
-router.get("/add-classification", invController.buildAddClassification)
-
-// Process add-classification form
+router.get("/add-classification", checkEmployeeOrAdmin, invController.buildAddClassification)
 router.post(
   "/add-classification",
+  checkEmployeeOrAdmin,
   classificationValidate.classificationRules(),
   classificationValidate.checkClassificationData,
   invController.addClassification
 )
-// Deliver add inventory view
-router.get("/add-inventory", invController.buildAddInventory)
+
+router.get("/add-inventory", checkEmployeeOrAdmin, invController.buildAddInventory)
 router.post(
   "/add-inventory",
+  checkEmployeeOrAdmin,
   inventoryValidate.inventoryRules(),
   inventoryValidate.checkInventoryData,
   invController.addInventory
 )
+
 module.exports = router
