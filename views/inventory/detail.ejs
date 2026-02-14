@@ -1,11 +1,33 @@
-<% if (title) { %>
-  <h1><%= title %></h1>
+<h2>Customer Reviews</h2>
+
+<p><strong>Average Rating:</strong> <%= average || "No ratings yet" %> ⭐</p>
+
+<% if (reviews.length > 0) { %>
+  <% reviews.forEach(review => { %>
+    <div class="review">
+      <strong><%= review.review_author %></strong>
+      <span>⭐ <%= review.review_rating %></span>
+      <p><%= review.review_text %></p>
+      <small><%= review.review_date.toDateString() %></small>
+    </div>
+  <% }) %>
+<% } else { %>
+  <p>No reviews yet.</p>
 <% } %>
 
-<% if (typeof vehicleHTML !== 'undefined') { %>
-  <div class="inventory-container">
-    <%- vehicleHTML %>
-  </div>
-<% } else { %>
-  <p>Vehicle details not found.</p>
-<% } %>
+<h3>Add a Review</h3>
+
+<form action="/inv/add-review" method="POST">
+  <input type="hidden" name="inv_id" value="<%= vehicle.inv_id %>">
+
+  <label>Name</label>
+  <input type="text" name="review_author" required>
+
+  <label>Rating (1-5)</label>
+  <input type="number" name="review_rating" min="1" max="5" required>
+
+  <label>Review</label>
+  <textarea name="review_text" required></textarea>
+
+  <button type="submit">Submit Review</button>
+</form>

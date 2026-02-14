@@ -94,6 +94,62 @@ async function addInventory(data) {
   }
 }
 
+/* ***************************
+ * Search Inventory
+ * ************************** */
+async function searchInventory(filters) {
+  try {
+    let sql = `
+      SELECT i.*, c.classification_name
+      FROM inventory i
+      JOIN classification c
+      ON i.classification_id = c.classification_id
+      WHERE 1=1
+    `
+
+    const values = []
+    let index = 1
+
+    // Keyword search (make/model)
+    if (filters.keyword) {
+      sql += ` AND (LOWER(i.inv_make) LIKE $${index}
+               OR LOWER(i.inv_model) LIKE $${index})`
+      values.push(`%${filters.keyword.toLowerCase()}%`)
+      index++
+    }
+
+    // Min price
+    if (filters.min_price) {
+      sql += ` AND i.inv_price >= $${index}`
+      values.push(filters.min_price)
+      index++
+    }
+
+    // Max price
+    if (filters.max_price) {
+      sql += ` AND i.inv_price <= $${index}`
+      values.push(filters.max_price)
+      index++
+    }
+
+    // Classification filter
+    if (filters.classification_id) {
+      sql += ` AND i.classification_id = $${index}`
+      values.push(filters.classification_id)
+      index++
+    }
+
+    sql += ` ORDER BY i.inv_price ASC`
+
+    const result = await pool.query(sql, values)
+    return result.rows
+  } catch (error) {
+    console.error("searchInventory error:", error)
+    return []
+  }
+}
+
+
 
 module.exports = {
   addInventory,

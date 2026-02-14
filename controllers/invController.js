@@ -1,6 +1,8 @@
 const invModel = require("../models/inventory-model")
 const utilities = require("../utilities")
 const invController = {}
+const reviewModel = require("../models/review-model")
+
 
 /* ===============================
    ADD CLASSIFICATION
@@ -21,7 +23,6 @@ invController.buildAddClassification = async function (req, res, next) {
     next(error)
   }
 }
-
 
 // POST add-classification
 invController.addClassification = async function (req, res, next) {
@@ -186,5 +187,62 @@ invController.addInventory = async function (req, res, next) {
     })
   }
 }
+
+
+invController.searchInventory = async function (req, res, next) {
+  try {
+    const nav = await utilities.getNav()
+    const classificationSelect =
+      await utilities.buildClassificationList(req.query.classification_id)
+
+    const filters = {
+      keyword: req.query.keyword || "",
+      min_price: req.query.min_price || "",
+      max_price: req.query.max_price || "",
+      classification_id: req.query.classification_id || ""
+    }
+
+    const data = await invModel.searchInventory(filters)
+
+    res.render("inventory/search", {
+      title: "Search Results",
+      nav,
+      classificationSelect,
+      grid: await utilities.buildClassificationGrid(data),
+      filters
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+invController.addReview = async function (req, res, next) {
+  try {
+    const { inv_id, review_author, review_rating, review_text } = req.body
+
+    if (!review_author || !review_rating || !review_text) {
+      req.flash("error", "All fields are required.")
+      return res.redirect(`/inv/detail/${inv_id}`)
+    }
+
+    if (review_rating < 1 || review_rating > 5) {
+      req.flash("error", "Rating must be between 1 and 5.")
+      return res.redirect(`/inv/detail/${inv_id}`)
+    }
+
+    await reviewModel.addReview(
+      inv_id,
+      review_author,
+      review_rating,
+      review_text
+    )
+
+    req.flash("success", "Review added successfully.")
+    res.redirect(`/inv/detail/${inv_id}`)
+  } catch (error) {
+    next(error)
+  }
+}
+
 
 module.exports = invController

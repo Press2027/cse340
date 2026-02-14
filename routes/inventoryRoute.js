@@ -1,9 +1,10 @@
 const express = require("express")
 const router = express.Router()
+
 const invController = require("../controllers/invController")
 const classificationValidate = require("../utilities/classification-validation")
 const inventoryValidate = require("../utilities/inventory-validation")
-const checkEmployeeOrAdmin = require("../utilities/authorizeEmployee") // middleware for Task 2
+const checkEmployeeOrAdmin = require("../utilities/authorizeEmployee")
 
 // Public routes (site visitors)
 router.get("/type/:classificationId", invController.buildByClassificationId)
@@ -29,5 +30,8 @@ router.post(
   inventoryValidate.checkInventoryData,
   invController.addInventory
 )
+
+// Review route
+router.post("/add-review", invController.addReview)
 
 module.exports = router
