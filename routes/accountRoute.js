@@ -35,7 +35,7 @@ router.post(
  ***************************** */
 router.get(
   "/",
-  utilities.checkLogin, // ensures user is logged in
+  utilities.checkLogin,
   utilities.handleErrors(accountController.buildAccount)
 )
 
@@ -72,7 +72,5 @@ router.post(
  * Logout
  ***************************** */
 router.get("/logout", accountController.logout)
-
-
 
 module.exports = router
