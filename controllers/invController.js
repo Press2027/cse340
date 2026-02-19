@@ -1,8 +1,8 @@
 const invModel = require("../models/inventory-model")
 const utilities = require("../utilities")
-const invController = {}
 const reviewModel = require("../models/review-model")
 
+const invController = {}
 
 /* ===============================
    ADD CLASSIFICATION
@@ -12,12 +12,13 @@ const reviewModel = require("../models/review-model")
 invController.buildAddClassification = async function (req, res, next) {
   try {
     const nav = await utilities.getNav()
+
     res.render("inventory/add-classification", {
       title: "Add Classification",
       nav,
       errors: null,
       message: req.flash("error"),
-      classification_name: "" // 👈 ADD THIS for sticky field
+      classification_name: ""
     })
   } catch (error) {
     next(error)
@@ -44,12 +45,13 @@ invController.addClassification = async function (req, res, next) {
     throw new Error("Insert failed")
   } catch (error) {
     const nav = await utilities.getNav()
+
     res.render("inventory/add-classification", {
       title: "Add Classification",
       nav,
       errors: null,
       message: "Failed to add classification.",
-      classification_name: req.body.classification_name || "" // 👈 STICKY
+      classification_name: req.body.classification_name || ""
     })
   }
 }
@@ -80,7 +82,10 @@ invController.buildByClassificationId = async function (req, res, next) {
   }
 }
 
-// Build vehicle detail view
+/* ===============================
+   VEHICLE DETAIL (WITH REVIEWS)
+================================ */
+
 invController.buildVehicleDetail = async function (req, res, next) {
   try {
     const invId = req.params.invId
@@ -94,11 +99,20 @@ invController.buildVehicleDetail = async function (req, res, next) {
       })
     }
 
+    // Get reviews
+    const reviews = await reviewModel.getReviewsByInvId(invId)
+
+    // Get average rating
+    const average = await reviewModel.getAverageRating(invId)
+
     res.render("inventory/detail", {
       title: `${vehicle.inv_make} ${vehicle.inv_model}`,
       nav,
-      vehicleHTML: utilities.buildVehicleDetailHTML(vehicle),
+      vehicle,
+      reviews,
+      average
     })
+
   } catch (error) {
     next(error)
   }
@@ -111,6 +125,7 @@ invController.buildVehicleDetail = async function (req, res, next) {
 invController.buildManagement = async function (req, res, next) {
   try {
     const nav = await utilities.getNav()
+
     res.render("inventory/management", {
       title: "Inventory Management",
       nav,
@@ -137,8 +152,6 @@ invController.buildAddInventory = async function (req, res, next) {
       classificationSelect,
       errors: null,
       message: null,
-
-      // 👇 STICKY FIELD DEFAULTS
       inv_make: "",
       inv_model: "",
       inv_year: "",
@@ -188,6 +201,9 @@ invController.addInventory = async function (req, res, next) {
   }
 }
 
+/* ===============================
+   SEARCH INVENTORY
+================================ */
 
 invController.searchInventory = async function (req, res, next) {
   try {
@@ -216,6 +232,10 @@ invController.searchInventory = async function (req, res, next) {
   }
 }
 
+/* ===============================
+   ADD REVIEW
+================================ */
+
 invController.addReview = async function (req, res, next) {
   try {
     const { inv_id, review_author, review_rating, review_text } = req.body
@@ -243,6 +263,5 @@ invController.addReview = async function (req, res, next) {
     next(error)
   }
 }
-
 
 module.exports = invController

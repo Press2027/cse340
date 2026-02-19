@@ -1,15 +1,38 @@
+<h1><%= title %></h1>
+
+<div class="vehicle-detail">
+
+  <!-- Thumbnail Image -->
+  <div class="vehicle-image">
+    <img src="<%= vehicle.inv_thumbnail || '/images/no-image.png' %>"
+         alt="<%= vehicle.inv_make %> <%= vehicle.inv_model %> thumbnail"
+         class="thumbnail">
+  </div>
+
+  <p><strong>Price:</strong> $<%= vehicle.inv_price %></p>
+  <p><strong>Description:</strong> <%= vehicle.inv_description %></p>
+  <p><strong>Color:</strong> <%= vehicle.inv_color %></p>
+  <p><strong>Miles:</strong> <%= vehicle.inv_miles %></p>
+</div>
+
+<hr>
+
 <h2>Customer Reviews</h2>
 
-<p><strong>Average Rating:</strong> <%= average || "No ratings yet" %> ⭐</p>
+<p>
+  <strong>Average Rating:</strong>
+  <%= average ? average : "No ratings yet" %> ⭐
+</p>
 
-<% if (reviews.length > 0) { %>
+<% if (reviews && reviews.length > 0) { %>
   <% reviews.forEach(review => { %>
     <div class="review">
       <strong><%= review.review_author %></strong>
       <span>⭐ <%= review.review_rating %></span>
       <p><%= review.review_text %></p>
-      <small><%= review.review_date.toDateString() %></small>
+      <small><%= new Date(review.review_date).toDateString() %></small>
     </div>
+    <hr>
   <% }) %>
 <% } else { %>
   <p>No reviews yet.</p>
